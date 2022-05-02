@@ -53,6 +53,7 @@ def main():
     imagepred = test_jpg("./MNIST_JPGS/testSample/img_1.jpg", model, device)
     img = mpimg.imread("./MNIST_JPGS/testSample/img_1.jpg")
     imgplot = plt.imshow(img)
+    plt.show()
     print(imagepred)
         
 # Define model
