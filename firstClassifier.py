@@ -8,6 +8,48 @@ import PIL
 import torchvision
 
 
+def main():
+    # Get cpu or gpu device for training.
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    
+    #SETTING UP DATA##################################
+    # Download training data from open datasets.
+    training_data = datasets.MNIST(
+        root="./data/",
+        train=True,
+        download=False,
+        transform=ToTensor(),
+    )
+
+    # Download test data from open datasets.
+    test_data = datasets.MNIST(
+        root="./data/",
+        train=False,
+        download=False,
+        transform=ToTensor(),
+    )
+
+    # Create data loaders.
+    train_dataloader = DataLoader(training_data, batch_size=batch_size)
+    test_dataloader = DataLoader(test_data, batch_size=batch_size)
+    ###################################################
+    
+    #training network#############################################
+    batch_size = 128
+    model = NeuralNetwork().to(device)
+    print(model)
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+    epochs = 10
+    for t in range(epochs):
+        print(f"Epoch {t+1}\n-------------------------------")
+        train(train_dataloader, model, loss_fn, optimizer)
+    ##############################################################
+    test(test_dataloader, model)
+    print("Done!")
+
+    image = test_jpg("./MNIST_JPGS/testSample/img_1.jpg")
+        
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -67,59 +109,12 @@ def test_jpg(image_name):
     loader = Compose([torchvision.transforms.PILToTensor()])
     image = loader(image).float()
     image = image.unsqueeze(0)
-    if device == "cuda":
+    if torch.cuda.is_available():
         return image.cuda()
     else:
         return image
-    with torch.no_grad():
-    logits = model.forward(image)
-    #ps = torch.exp(logits)
-    #predTest = torch.max(ps,1)
-    predicted = torch.argmax(logits).item()
-     
-
-# Get cpu or gpu device for training.
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print("Using {} device".format(device))
+    
 
 
-# Download training data from open datasets.
-training_data = datasets.MNIST(
-    root="./data/",
-    train=True,
-    download=False,
-    transform=ToTensor(),
-)
-
-# Download test data from open datasets.
-test_data = datasets.MNIST(
-    root="./data/",
-    train=False,
-    download=False,
-    transform=ToTensor(),
-)
-
-# Create data loaders.
-batch_size = 128
-train_dataloader = DataLoader(training_data, batch_size=batch_size)
-test_dataloader = DataLoader(test_data, batch_size=batch_size)
-
-
-
-
-model = NeuralNetwork().to(device)
-print(model)
-
-loss_fn = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-
-epochs = 10
-for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
-    train(train_dataloader, model, loss_fn, optimizer)
-test(test_dataloader, model)
-print("Done!")
-
-
-
-image = test_jpg("./MNIST_JPGS/testSample/img_1.jpg")
+if __name__ == "__main__":
+    main()
