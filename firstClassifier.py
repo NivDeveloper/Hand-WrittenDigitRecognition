@@ -4,18 +4,21 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, io
 from torchvision.transforms import ToTensor, Lambda, Compose
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import PIL 
 import torchvision
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+batch_size = 128
+epochs = 10
+learning_rate = 0.1
 
 def main():
-    # Get cpu or gpu device for training.
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    batch_size = 128
-    epochs = 10
+    #setting parameters of network
+    
     model = NeuralNetwork().to(device)
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
     
     print(model)
     #SETTING UP DATA##################################
@@ -41,15 +44,15 @@ def main():
     ###################################################
     
     #training network#############################################
-
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer, device)
     ##############################################################
+    
     test(test_dataloader, model, loss_fn, device)
-    print("Done!")
-
     imagepred = test_jpg("./MNIST_JPGS/testSample/img_1.jpg", model, device)
+    img = mpimg.imread("./MNIST_JPGS/testSample/img_1.jpg")
+    imgplot = plt.imshow(img)
     print(imagepred)
         
 # Define model
@@ -98,7 +101,6 @@ def test(dataloader, model, loss_fn, device):
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             pred = model(X)
-            #print(pred,y)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
     test_loss /= size
@@ -110,17 +112,10 @@ def test_jpg(image_name, model, device):
     
     image = PIL.Image.open(image_name)
     loader = Compose([torchvision.transforms.PILToTensor()])
-    image = loader(image).float()
-    image = image.unsqueeze(0)
-    image = image.to(device)
+    image = loader(image).float().unsqueeze(0).to(device)
     with torch.no_grad():
         pred = model(image)
-    
     return pred.argmax().item()
-        
-        
-    
-
 
 if __name__ == "__main__":
     main()
