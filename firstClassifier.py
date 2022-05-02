@@ -48,13 +48,21 @@ def main():
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer, device)
     ##############################################################
-    
+    print("Done!")
     test(test_dataloader, model, loss_fn, device)
-    imagepred = test_jpg("./MNIST_JPGS/testSample/img_1.jpg", model, device)
-    img = mpimg.imread("./MNIST_JPGS/testSample/img_1.jpg")
-    imgplot = plt.imshow(img)
-    plt.show()
-    print(imagepred)
+    
+    
+    jpgpath = ""
+    while jpgpath != "exit":
+        jpgpath = input("Please enter a filepath:\n> ")
+        imagepred = test_jpg(jpgpath, model, device)
+        print("Classifier",imagepred)
+        img = mpimg.imread(jpgpath)
+        plt.imshow(img)
+        plt.show()
+        if jpgpath == "exit":
+            print("Exiting...")
+        
         
 # Define model
 class NeuralNetwork(nn.Module):
