@@ -11,14 +11,12 @@ import torchvision
 device = "cuda" if torch.cuda.is_available() else "cpu"
 batch_size = 64
 epochs = 5
-learning_rate = 0.001
-#loss_fn = nn.CrossEntropyLoss()
-#optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+learning_rate = 0.01
 
 def main():
     #setting parameters of network
     
-    model = NeuralNetwork().to(device)
+    model = ConvNet().to(device)
     loss_fn = nn.CrossEntropyLoss()
     #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
     optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
@@ -57,40 +55,59 @@ def main():
     
     
     
-    jpgpath = "exit"
+    jpgpath = ""
     num = 1
     while jpgpath != "exit":
-        jpgpath = input("Please enter a filepath or 'exit' to exit:\n> ")
+        #jpgpath = input("Please enter a filepath or 'exit' to exit:\n> ")
         if jpgpath == "exit":
             print("Exiting...")
             break
-        #jpgpath = "./MNIST_JPGS/testSample/img_"+str(num)+".jpg"
+        jpgpath = "./MNIST_JPGS/testSample/img_"+str(num)+".jpg"
         num+=1
         imagepred = test_jpg(jpgpath, model, device)
         print("Classifier",imagepred)
         img = mpimg.imread(jpgpath)
         plt.imshow(img)
-        plt.title("Image classified as",str(imagepred))
+        #plt.title("Image classified as",str(imagepred))
         plt.show()
         
         
         
 # Define model
-class NeuralNetwork(nn.Module):
+class ConvNet(nn.Module):
     def __init__(self):
-        super(NeuralNetwork, self).__init__()
+        super(ConvNet, self).__init__()
         self.flatten = nn.Flatten()
         self.network = nn.Sequential(
-            nn.Linear(28*28, 512),
+            nn.Conv2d(
+                in_channels = 1,
+                out_channels = 8,
+                kernel_size = 3,
+                stride = 1,
+                padding = 1
+            ),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                in_channels = 8,
+                out_channels = 16,
+                kernel_size = 3,
+                padding = 1
+            ),
+            nn.LeakyReLU(),
+            nn.MaxPool2d(
+                kernel_size = 3,
+                padding=1
+            ),
+            nn.Flatten(),
+            nn.Linear(1600, 512),
             nn.ReLU(),
-            nn.Linear(512, 512),
+            nn.Linear(512,64),
             nn.ReLU(),
-            nn.Linear(512, 10),
-            #nn.ReLU()
+            nn.Linear(64,10)
         )
 
     def forward(self, x):
-        x = self.flatten(x)
+        #x = self.flatten(x)
         logits = self.network(x)
         return logits
 
