@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import PIL 
 import torchvision
+import numpy
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 batch_size = 64
@@ -57,21 +58,21 @@ def main():
     
     
     
-    jpgpath = "exit"
+    jpgpath = ""
     num = 1
     while jpgpath != "exit":
         jpgpath = input("Please enter a filepath or 'exit' to exit:\n> ")
         if jpgpath == "exit":
             print("Exiting...")
             break
-        #jpgpath = "./MNIST_JPGS/testSample/img_"+str(num)+".jpg"
+        #jpgpath = "./MNIST_JPGS/testSample/img_1.jpg""+str(num)+"
         num+=1
         imagepred = test_jpg(jpgpath, model, device)
         print("Classifier",imagepred)
-        img = mpimg.imread(jpgpath)
-        plt.imshow(img)
-        plt.title("Image classified as",str(imagepred))
-        plt.show()
+        #img = mpimg.imread(jpgpath)
+        #plt.imshow(img)
+        #plt.title("Image classified as")#+str(imagepred)
+        #plt.show()
         
         
         

@@ -58,18 +58,18 @@ def main():
     jpgpath = ""
     num = 1
     while jpgpath != "exit":
-        #jpgpath = input("Please enter a filepath or 'exit' to exit:\n> ")
+        jpgpath = input("Please enter a filepath or 'exit' to exit:\n> ")
         if jpgpath == "exit":
             print("Exiting...")
             break
-        jpgpath = "./MNIST_JPGS/testSample/img_"+str(num)+".jpg"
+        #jpgpath = "./MNIST_JPGS/testSample/img_"+str(num)+".jpg"
         num+=1
         imagepred = test_jpg(jpgpath, model, device)
         print("Classifier",imagepred)
-        img = mpimg.imread(jpgpath)
-        plt.imshow(img)
+        #img = mpimg.imread(jpgpath)
+        #plt.imshow(img)
         #plt.title("Image classified as",str(imagepred))
-        plt.show()
+        #plt.show()
         
         
         
