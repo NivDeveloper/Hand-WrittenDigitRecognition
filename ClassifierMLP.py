@@ -7,16 +7,17 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import PIL 
 import torchvision
+import numpy
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 batch_size = 64
 epochs = 5
-learning_rate = 0.01
+learning_rate = 0.001
 
 def main():
     #setting parameters of network
     
-    model = ConvNet().to(device)
+    model = NeuralNetwork().to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
     #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
@@ -68,40 +69,20 @@ def main():
         
         
 # Define model
-class ConvNet(nn.Module):
+class NeuralNetwork(nn.Module):
     def __init__(self):
-        super(ConvNet, self).__init__()
+        super(NeuralNetwork, self).__init__()
         self.flatten = nn.Flatten()
         self.network = nn.Sequential(
-            nn.Conv2d(
-                in_channels = 1,
-                out_channels = 8,
-                kernel_size = 3,
-                stride = 1,
-                padding = 1
-            ),
-            nn.LeakyReLU(),
-            nn.Conv2d(
-                in_channels = 8,
-                out_channels = 16,
-                kernel_size = 3,
-                padding = 1
-            ),
-            nn.LeakyReLU(),
-            nn.MaxPool2d(
-                kernel_size = 3,
-                padding=1
-            ),
-            nn.Flatten(),
-            nn.Linear(1600, 512),
+            nn.Linear(28*28, 512),
             nn.ReLU(),
-            nn.Linear(512,64),
+            nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(64,10)
+            nn.Linear(512, 10),
         )
 
     def forward(self, x):
-        #x = self.flatten(x)
+        x = self.flatten(x)
         logits = self.network(x)
         return logits
 
